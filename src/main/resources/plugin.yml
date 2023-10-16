@@ -1,0 +1,13 @@
+name: Tripgame
+version: ${project.version}
+main: net.nimrod.tripgame.Tripgame
+api-version: 1.20
+description: Minecraft minigame CONTROL/BEDWARS/TOWER DEFENSE/TDM
+author: Huzza27
+commands:
+  claim:
+    description: Claim a circular area
+    usage: /claim
+  totem:
+    description: sets a totem
+    usage: /totem [set|remove]
