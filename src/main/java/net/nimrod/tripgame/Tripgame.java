@@ -23,7 +23,7 @@ public class Tripgame extends JavaPlugin {
 
         for (PluginCommand command : commands) {
             if (command == null) {
-                getLogger().severe("Missing command " + command.getName() + " in plugin.yml!");
+                getLogger().severe("Missing command in plugin.yml!");
                 getServer().getPluginManager().disablePlugin(this);
                 return;
             }
