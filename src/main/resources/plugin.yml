@@ -11,3 +11,6 @@ commands:
   totem:
     description: sets a totem
     usage: /totem [set|remove]
+  player:
+    description: adds or removes player from player list
+    usage: /player [add|remove|list]
