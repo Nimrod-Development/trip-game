@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
+
 public class Tripgame extends JavaPlugin {
 
     private final String TOTEM_TAG = "totem";
@@ -15,17 +17,19 @@ public class Tripgame extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        PluginCommand claimPlugin = this.getCommand("claim");
-        PluginCommand totemPlugin = this.getCommand("totem");
+        ArrayList<PluginCommand> commands = new ArrayList<>();
+        commands.add(this.getCommand("claim"));
+        commands.add(this.getCommand("totem"));
 
-        if (claimPlugin == null || totemPlugin == null) {
-            getLogger().severe("Could not find claim or totem plugin");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        } else {
-            claimPlugin.setExecutor(new ClaimCommandExecutor());
-            totemPlugin.setExecutor(new TotemCommandExecutor());
+        for (PluginCommand command : commands) {
+            if (command == null) {
+                getLogger().severe("Missing command " + command.getName() + " in plugin.yml!");
+                getServer().getPluginManager().disablePlugin(this);
+                return;
+            }
+            command.setExecutor(new ClaimCommandExecutor());
         }
+
 
         // Repeating task to check player proximity to the totem
         this.getServer().getScheduler().runTaskTimer(this, this::checkPlayersNearTotem, 0, 20); // Check every second
