@@ -1,10 +1,7 @@
 package net.nimrod.tripgame;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import org.bukkit.command.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -18,8 +15,17 @@ public class Tripgame extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.getCommand("claim").setExecutor(new ClaimCommandExecutor());
-        this.getCommand("totem").setExecutor(new TotemCommandExecutor());
+        PluginCommand claimPlugin = this.getCommand("claim");
+        PluginCommand totemPlugin = this.getCommand("totem");
+
+        if (claimPlugin == null || totemPlugin == null) {
+            getLogger().severe("Could not find claim or totem plugin");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        } else {
+            claimPlugin.setExecutor(new ClaimCommandExecutor());
+            totemPlugin.setExecutor(new TotemCommandExecutor());
+        }
 
         // Repeating task to check player proximity to the totem
         this.getServer().getScheduler().runTaskTimer(this, this::checkPlayersNearTotem, 0, 20); // Check every second
@@ -103,7 +109,7 @@ public class Tripgame extends JavaPlugin {
         int y = totem.getLocation().getBlockY();
         int z = totem.getLocation().getBlockZ();
 
-        // Loop to create a 3x3 of lime stained glass underneath the armor stand
+        // Loop to create a 3x3 of lime stained-glass underneath the armor stand
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 player.getWorld().getBlockAt(x + dx, y - 1, z + dz).setType(Material.LIME_STAINED_GLASS);
