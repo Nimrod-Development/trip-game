@@ -132,7 +132,10 @@ public class Tripgame extends JavaPlugin {
             return true;
         }
     }
-
+        /*
+            This method manages a list that contains what players are actually playing the game. I made it for testing
+            purposes because it was very annoying to constantly be spammed with the messages when I got near the armor stand
+         */
         private class MakePlayer implements CommandExecutor {
             @Override
             public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -180,7 +183,9 @@ public class Tripgame extends JavaPlugin {
             }
         }
 
-
+/*
+This method spawns an armor stand and gives it a tag so that we can determine the distance from the armor stand and any players
+ */
     public void spawnTotem(Player player, ArmorStand totem) {
         totem.setMetadata(TOTEM_TAG, new FixedMetadataValue(Tripgame.this, true));
         player.sendMessage("Totem set at your location!");
