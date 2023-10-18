@@ -8,9 +8,9 @@ commands:
   claim:
     description: Claim a circular area
     usage: /claim
-  totem:
+  flag:
     description: sets a totem
-    usage: /totem [set|remove]
+    usage: /flag [set|remove]
   player:
     description: manages player list
     usage: /player [add|remove|list]
