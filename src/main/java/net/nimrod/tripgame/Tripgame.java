@@ -21,8 +21,9 @@ import java.util.stream.Collectors;
 public class Tripgame extends JavaPlugin {
 
     private final String FLAG_TAG = "flag";
-    private final double TOTEM_RADIUS_SQUARED = 4 * 4;
+    private final double ZONE_RADIUS_SQUARED = 4 * 4;
     public ArrayList<Player> players = new ArrayList<>();
+    public ArrayList<Zone> activeZones = new ArrayList<>();
     private BossBarTimer timer;
     boolean claiming = false;
     boolean claimTimerRunning = false;
@@ -35,35 +36,76 @@ public class Tripgame extends JavaPlugin {
     }
 
     private void setExecutors() {
-        this.getCommand("claim").setExecutor(new ClaimCommandExecutor());
-        this.getCommand("flag").setExecutor(new FlagCommandExecutor());
         this.getCommand("player").setExecutor(new MakePlayerExecutor());
+        this.getCommand("zone").setExecutor(new ZoneCommandExecutor());
     }
 
     private void schedulePlayerCheck() {
-        this.getServer().getScheduler().runTaskTimer(this, this::checkPlayersNearFlag, 0, 20);
+        this.getServer().getScheduler().runTaskTimer(this, this::checkPlayersNearZone, 0, 20);
     }
 
-    private void checkPlayersNearFlag() {
-        if (players.isEmpty()) return;
+    private void checkPlayersNearZone() {
+        if (activeZones.isEmpty()) return;
 
         for (Player player : getServer().getOnlinePlayers()) {
-            if (!players.contains(player)) continue;
+            if (!players.contains(player) && activeZones.isEmpty()) continue;
 
-            Flag flag = new Flag(this);
-            double distanceSquared = player.getLocation().distanceSquared(flag.getLocation());
+            Flag flag;
+            for (Zone zone : activeZones)
+            {
+                flag = zone.getFlag();
+                double distanceSquared = player.getLocation().distanceSquared(flag.getLocation());
 
-            if (flag.hasFlagTag() && distanceSquared <= TOTEM_RADIUS_SQUARED && !claiming) {
-                startClaiming(player);
-            } else if (flag.hasFlagTag() && distanceSquared > TOTEM_RADIUS_SQUARED && claiming) {
-                stopClaiming();
+                if (flag.hasFlagTag() && distanceSquared <= ZONE_RADIUS_SQUARED && !claiming) {
+                    startClaiming(player);
+                } else if (flag.hasFlagTag() && distanceSquared > ZONE_RADIUS_SQUARED && claiming) {
+                    stopClaiming();
+                }
             }
+
+        }
+    }
+
+
+    public class ZoneCommandExecutor implements CommandExecutor {
+
+        public ZoneCommandExecutor() {
+
+        }
+
+        @Override
+        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("This command can only be used by a player!");
+                return true;
+            }
+
+            Player player = (Player) sender;
+
+            if (args.length >= 2 && args[0].equalsIgnoreCase("set")) {
+                String zoneName = args[1];
+
+                // Assuming a default radius of 5 for the sake of this example.
+                // You can modify it or even accept it as an argument if you like.
+                int defaultRadius = 5;
+
+                Zone zone = new Zone(zoneName, defaultRadius, player, Tripgame.this);
+                activeZones.add(zone);
+                zone.setZone(player);
+
+                player.sendMessage("Zone '" + zoneName + "' set at your location!");
+
+                return true;
+            }
+
+            sender.sendMessage("Usage: /zone set [name]");
+            return false;
         }
     }
 
     private void startClaiming(Player player) {
         claiming = true;
-        player.sendTitle("Claiming...", null, 10, 20, 10);
+        player.sendTitle("Claiming...", null, 5, 10, 5);
         if (!claimTimerRunning) {
             claimTimerRunning = timer.startTimer(player, 10);
         }
@@ -75,33 +117,9 @@ public class Tripgame extends JavaPlugin {
     }
 
 
-    private class ClaimCommandExecutor implements CommandExecutor {
 
-        @Override
-        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-            if (isNotPlayer(sender)) return true;
-
-            Player player = (Player) sender;
-            handleClaim(player);
-
-            return true;
-        }
-
-        private boolean isNotPlayer(CommandSender sender) {
-            if (!(sender instanceof Player)) {
-                sender.sendMessage("This command can only be used by a player!");
-                return true;
-            }
-            return false;
-        }
-
-        private void handleClaim(Player player) {
-            //We can expland this method when we figure out what functionality we are going for
-            player.sendMessage("Claimed and changed blocks to lime stained glass!");
-        }
-    }
-
-
+        //Old Flag Command
+    /*
     private class FlagCommandExecutor implements CommandExecutor {
         @Override
         public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -129,6 +147,8 @@ public class Tripgame extends JavaPlugin {
             return true;
         }
     }
+
+     */
 
 
     private class MakePlayerExecutor implements CommandExecutor {
