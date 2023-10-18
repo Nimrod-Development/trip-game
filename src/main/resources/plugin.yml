@@ -5,9 +5,9 @@ api-version: 1.20
 description: Minecraft minigame CONTROL/BEDWARS/TOWER DEFENSE/TDM
 author: Huzza27
 commands:
-  flag:
-    description: sets a totem
-    usage: /flag [set|remove]
+  zone:
+    description: sets a zone
+    usage: /zone [set|remove]
   player:
     description: manages player list
     usage: /player [add|remove|list]

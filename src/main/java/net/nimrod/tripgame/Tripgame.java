@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class Tripgame extends JavaPlugin {
 
     private final String FLAG_TAG = "flag";
-    private final double ZONE_RADIUS_SQUARED = 4 * 4;
+    private final double ZONE_RADIUS_SQUARED = 5 * 5;
     public ArrayList<Player> players = new ArrayList<>();
     public ArrayList<Zone> activeZones = new ArrayList<>();
     private BossBarTimer timer;
@@ -96,6 +96,18 @@ public class Tripgame extends JavaPlugin {
                 player.sendMessage("Zone '" + zoneName + "' set at your location!");
 
                 return true;
+            }
+
+            else if (args.length >= 2 && args[0].equalsIgnoreCase("remove"))
+            {
+                for (Zone zone : activeZones)
+                {
+                    if(zone.getName().equalsIgnoreCase(args[1]))
+                    {
+                        zone.removeZone(player);
+                        return true;
+                    }
+                }
             }
 
             sender.sendMessage("Usage: /zone set [name]");

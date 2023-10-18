@@ -39,6 +39,27 @@ public class Zone {
         }
     }
 
+
+    public void removeZone(Player player) {
+        // Place the flag
+
+
+        // Get the flag's location
+        Location flagLocation = flag.getLocation();
+        flag.removeFlag();
+        // Turn blocks under the flag to white stained glass in a circle
+        int x = flagLocation.getBlockX();
+        int y = flagLocation.getBlockY();
+        int z = flagLocation.getBlockZ();
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+                if (dx * dx + dz * dz <= radius * radius) {
+                    player.getWorld().getBlockAt(x + dx, y - 1, z + dz).setType(Material.WHITE_WOOL);
+                }
+            }
+        }
+    }
+
     public boolean isClaimed()
     {
         return claimed;
