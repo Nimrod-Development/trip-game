@@ -48,23 +48,28 @@ public class Tripgame extends JavaPlugin {
         if (activeZones.isEmpty()) return;
 
         for (Player player : getServer().getOnlinePlayers()) {
-            if (!players.contains(player) && activeZones.isEmpty()) continue;
+            if (!players.contains(player)) return;
 
-            Flag flag;
-            for (Zone zone : activeZones)
-            {
-                flag = zone.getFlag();
+            boolean playerInAnyZone = false;
+
+            for (Zone zone : activeZones) {
+                Flag flag = zone.getFlag();
                 double distanceSquared = player.getLocation().distanceSquared(flag.getLocation());
 
-                if (flag.hasFlagTag() && distanceSquared <= ZONE_RADIUS_SQUARED && !claiming) {
-                    startClaiming(player);
-                } else if (flag.hasFlagTag() && distanceSquared > ZONE_RADIUS_SQUARED && claiming) {
-                    stopClaiming();
+                if (flag.hasFlagTag() && distanceSquared <= ZONE_RADIUS_SQUARED) {
+                    playerInAnyZone = true;
+                    break;
                 }
             }
 
+            if (playerInAnyZone && !claiming) {
+                startClaiming(player);
+            } else if (!playerInAnyZone && claiming) {
+                stopClaiming();
+            }
         }
     }
+
 
 
     public class ZoneCommandExecutor implements CommandExecutor {
@@ -105,6 +110,7 @@ public class Tripgame extends JavaPlugin {
                     if(zone.getName().equalsIgnoreCase(args[1]))
                     {
                         zone.removeZone(player);
+                        activeZones.remove(zone);
                         return true;
                     }
                 }

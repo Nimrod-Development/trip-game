@@ -46,6 +46,7 @@ public class Zone {
 
         // Get the flag's location
         Location flagLocation = flag.getLocation();
+
         flag.removeFlag();
         // Turn blocks under the flag to white stained glass in a circle
         int x = flagLocation.getBlockX();
